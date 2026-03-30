@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import SoundToggleVideo from '../components/SoundToggleVideo';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -70,7 +71,7 @@ const ScriptWriting: React.FC = () => {
           {/* Video Examples */}
           <div style={{ display: 'flex', gap: '1rem' }}>
             <div className="sw-vid-1" style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', aspectRatio: '9/16', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-              <video src={vids[1] || vids[0]} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <SoundToggleVideo src={vids[1] || vids[0]} style={{ width: '100%', height: '100%' }} />
             </div>
             <div className="sw-vid-2" style={{ flex: 1, borderRadius: '16px', overflow: 'hidden', aspectRatio: '9/16', marginTop: '2rem', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
               <video src={vids[2] || vids[0]} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

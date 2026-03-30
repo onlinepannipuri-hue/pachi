@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import Typewriter from 'typewriter-effect';
 
 const Hero: React.FC = () => {
   const textRef = useRef<HTMLDivElement>(null);
+  const heroVidRef = useRef<HTMLVideoElement>(null);
+  const [heroMuted, setHeroMuted] = useState(true);
   
   // Pick a video that is more likely to be bright
   const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
@@ -33,8 +35,9 @@ const Hero: React.FC = () => {
         zIndex: 1
       }}
     >
-      {/* Background Video (Placeholder) */}
+      {/* Background Video */}
       <video
+        ref={heroVidRef}
         src={heroVideo}
         autoPlay
         muted
@@ -52,6 +55,21 @@ const Hero: React.FC = () => {
           opacity: 0.8
         }}
       />
+      {/* Sound Toggle */}
+      <button
+        onClick={() => { if (heroVidRef.current) { heroVidRef.current.muted = !heroMuted; setHeroMuted(!heroMuted); } }}
+        style={{
+          position: 'absolute', bottom: '2rem', right: '2rem', zIndex: 10,
+          padding: '0.7rem 1.4rem', borderRadius: '50px',
+          background: heroMuted ? 'rgba(0,0,0,0.5)' : 'var(--accent-gold)',
+          backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.2)',
+          color: heroMuted ? '#fff' : '#000', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.3s ease',
+        }}
+      >
+        {heroMuted ? '🔇 Tap for Sound' : '🔊 Playing'}
+      </button>
       
       {/* Overlay gradient */}
       <div 

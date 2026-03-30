@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 import { FaYoutube } from 'react-icons/fa';
+import SoundToggleVideo from '../components/SoundToggleVideo';
 
 const PersonalChannel: React.FC = () => {
   const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
@@ -95,12 +96,12 @@ const PersonalChannel: React.FC = () => {
               position: 'relative',
               border: '2px solid var(--accent-gold)'
             }}>
-              <video 
+              <SoundToggleVideo 
                 src={vids[4] || vids[0]} 
-                autoPlay loop muted playsInline 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                showLabel={true}
+                style={{ width: '100%', height: '100%' }}
               />
-              <div style={{ position: 'absolute', bottom: '2rem', left: '0', width: '100%', textAlign: 'center' }}>
+              <div style={{ position: 'absolute', bottom: '2rem', left: '0', width: '100%', textAlign: 'center', zIndex: 5 }}>
                 <div style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(5px)', display: 'inline-block', padding: '0.8rem 1.5rem', borderRadius: '50px', color: 'white', fontWeight: 'bold', fontSize: '1.1rem' }}>
                   Latest Upload 🔥
                 </div>
