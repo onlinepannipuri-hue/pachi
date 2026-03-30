@@ -3,16 +3,16 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import VideoCard from '../components/VideoCard';
 import VideoModal from '../components/VideoModal';
+import { ALL_VIDEOS } from '../config/videoConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const videoModules = import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' });
-const rawVideos = Object.values(videoModules) as string[];
+const rawVideos = ALL_VIDEOS;
 
 const videos = rawVideos.map((src, index) => ({
   id: index + 1,
   category: ['Reels', 'Client Work', 'Viral Videos', 'Edits'][index % 4],
-  title: src.split('/').pop()?.split('.')[0]?.substring(0, 25) || `Video ${index + 1}`,
+  title: `Project ${index + 1}`,
   src: src
 }));
 

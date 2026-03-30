@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { CINEMATOGRAPHY_MEDIA } from '../config/videoConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
 const media = [
-  { id: 1, type: 'video' as const, src: vids[3] || vids[0] },
-  { id: 2, type: 'video' as const, src: vids[7] || vids[0] },
-  { id: 3, type: 'video' as const, src: vids[4] || vids[0] },
-  { id: 4, type: 'video' as const, src: vids[8] || vids[0] },
+  { id: 1, type: 'video' as const, src: CINEMATOGRAPHY_MEDIA[0] },
+  { id: 2, type: 'video' as const, src: CINEMATOGRAPHY_MEDIA[1] },
+  { id: 3, type: 'video' as const, src: CINEMATOGRAPHY_MEDIA[2] },
+  { id: 4, type: 'video' as const, src: CINEMATOGRAPHY_MEDIA[3] },
 ];
 
 const Cinematography: React.FC = () => {

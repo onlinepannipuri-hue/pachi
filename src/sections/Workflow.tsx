@@ -1,12 +1,12 @@
 import React from 'react';
+import { WORKFLOW_VIDEOS } from '../config/videoConfig';
 
-const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
 const steps = [
-  { id: 1, title: 'Client Handling', icon: '🤝', video: vids[5] || vids[0] },
-  { id: 2, title: 'Script', icon: '📝', video: vids[6] || vids[0] },
-  { id: 3, title: 'Shoot', icon: '🎥', video: vids[7] || vids[0] },
-  { id: 4, title: 'Edit', icon: '✂️', video: vids[8] || vids[0] },
-  { id: 5, title: 'Delivery', icon: '🚀', video: vids[0] },
+  { id: 1, title: 'Client Handling', icon: '🤝', video: WORKFLOW_VIDEOS.client },
+  { id: 2, title: 'Script', icon: '📝', video: WORKFLOW_VIDEOS.script },
+  { id: 3, title: 'Shoot', icon: '🎥', video: WORKFLOW_VIDEOS.shoot },
+  { id: 4, title: 'Edit', icon: '✂️', video: WORKFLOW_VIDEOS.edit },
+  { id: 5, title: 'Delivery', icon: '🚀', video: WORKFLOW_VIDEOS.client },
 ];
 
 const Workflow: React.FC = () => {

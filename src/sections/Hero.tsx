@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import Typewriter from 'typewriter-effect';
+import { HERO_VIDEO } from '../config/videoConfig';
 
 const Hero: React.FC = () => {
   const textRef = useRef<HTMLDivElement>(null);
   const heroVidRef = useRef<HTMLVideoElement>(null);
   const [heroMuted, setHeroMuted] = useState(true);
-  
-  // Pick a video that is more likely to be bright
-  const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
-  const heroVideo = vids[2] || vids[0];
+  const heroVideo = HERO_VIDEO;
 
   useEffect(() => {
     if (textRef.current) {

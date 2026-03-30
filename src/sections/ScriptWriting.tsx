@@ -2,12 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import SoundToggleVideo from '../components/SoundToggleVideo';
+import { ALL_VIDEOS } from '../config/videoConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ScriptWriting: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
+  const vids = ALL_VIDEOS;
 
   useEffect(() => {
     const ctx = gsap.context(() => {

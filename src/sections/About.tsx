@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Tilt from 'react-parallax-tilt';
+import { ABOUT_VIDEOS } from '../config/videoConfig';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,12 +40,12 @@ const About: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  // Get videos for image slideshow
-  const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
+  // Get videos for image slideshow from Cloudinary
+  const vids = ABOUT_VIDEOS;
   
   // Current visible video index for crossfade effect
   const [activeIndex, setActiveIndex] = useState(0);
-  const totalSlides = Math.min(vids.length, 5);
+  const totalSlides = vids.length;
 
   // Auto rotate images
   useEffect(() => {

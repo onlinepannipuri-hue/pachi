@@ -1,6 +1,7 @@
 import React from 'react';
+import { ALL_VIDEOS } from '../config/videoConfig';
 
-const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
+const vids = ALL_VIDEOS;
 const locations = [
   { id: 1, state: 'Jharkhand', client: 'Excel RI', video: vids[1] || vids[0] },
   { id: 2, state: 'Vizag', client: 'Kankatala', video: vids[2] || vids[0] },

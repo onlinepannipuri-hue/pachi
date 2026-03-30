@@ -4,9 +4,10 @@ import Particles, { initParticlesEngine } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 import { FaYoutube } from 'react-icons/fa';
 import SoundToggleVideo from '../components/SoundToggleVideo';
+import { PERSONAL_CHANNEL_LATEST } from '../config/videoConfig';
 
 const PersonalChannel: React.FC = () => {
-  const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
+  const latestVideo = PERSONAL_CHANNEL_LATEST;
   const [init, setInit] = useState(false);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const PersonalChannel: React.FC = () => {
               border: '2px solid var(--accent-gold)'
             }}>
               <SoundToggleVideo 
-                src={vids[4] || vids[0]} 
+                src={latestVideo} 
                 showLabel={true}
                 style={{ width: '100%', height: '100%' }}
               />

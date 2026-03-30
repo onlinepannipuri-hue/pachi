@@ -1,7 +1,8 @@
 import React from 'react';
+import { BTS_VIDEO } from '../config/videoConfig';
 
 const BehindTheScenes: React.FC = () => {
-  const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
+  const btsVideo = BTS_VIDEO;
 
   return (
     <section id="bts" className="section" style={{ padding: '0', position: 'relative' }}>
@@ -16,7 +17,7 @@ const BehindTheScenes: React.FC = () => {
       }}>
         {/* BTS Video Background */}
         <video 
-          src={vids[6] || vids[0]} 
+          src={btsVideo} 
           autoPlay loop muted playsInline 
           style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} 
         />
