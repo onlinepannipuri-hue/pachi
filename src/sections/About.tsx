@@ -1,13 +1,27 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Tilt from 'react-parallax-tilt';
-import { useInView } from 'react-intersection-observer';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Counter = ({ end, duration, suffix = '' }: { end: number, duration: number, suffix?: string }) => {
   const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
   useEffect(() => {
+    if (!ref.current) return;
+    ScrollTrigger.create({
+      trigger: ref.current,
+      start: 'top 85%',
+      onEnter: () => setStarted(true),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
     let start = 0;
-    if (start === end) return;
     const totalDuration = duration * 1000;
     const incrementTime = Math.max(Math.floor(totalDuration / end), 20);
     const timer = setInterval(() => {
@@ -16,74 +30,67 @@ const Counter = ({ end, duration, suffix = '' }: { end: number, duration: number
       if (start >= end) clearInterval(timer);
     }, incrementTime);
     return () => clearInterval(timer);
-  }, [end, duration]);
-  return <>{count}{suffix}</>;
+  }, [started, end, duration]);
+
+  return <span ref={ref}>{count}{suffix}</span>;
 };
 
 const About: React.FC = () => {
-  const { ref, inView } = useInView({
-    triggerOnce: true,
-    threshold: 0.2,
-  });
+  const sectionRef = useRef<HTMLElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
-  // Use a video as profile "image" via canvas capture
+  // Get videos for image slideshow
   const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
-  const profileVideo = vids[5] || vids[0]; // Pick a good one
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [posterReady, setPosterReady] = useState(false);
-  const [posterUrl, setPosterUrl] = useState('');
+  
+  // Current visible video index for crossfade effect
+  const [activeIndex, setActiveIndex] = useState(0);
+  const totalSlides = Math.min(vids.length, 5);
 
+  // Auto rotate images
   useEffect(() => {
-    // Capture a frame from the video as a profile photo
-    const video = videoRef.current;
-    if (!video) return;
-    
-    const handleLoaded = () => {
-      video.currentTime = 1; // seek to 1s for a good frame
-    };
-    
-    const handleSeeked = () => {
-      try {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(video, 0, 0);
-          const url = canvas.toDataURL('image/jpeg', 0.9);
-          setPosterUrl(url);
-          setPosterReady(true);
-        }
-      } catch (e) {
-        // fallback: just show video
-        setPosterReady(false);
-      }
-    };
+    const interval = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % totalSlides);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [totalSlides]);
 
-    video.addEventListener('loadeddata', handleLoaded);
-    video.addEventListener('seeked', handleSeeked);
-    
-    return () => {
-      video.removeEventListener('loadeddata', handleLoaded);
-      video.removeEventListener('seeked', handleSeeked);
-    };
+  // GSAP ScrollTrigger animations
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Title animation
+      gsap.from('.about-title', {
+        scrollTrigger: { trigger: '.about-title', start: 'top 85%' },
+        y: 60, opacity: 0, duration: 1, ease: 'power3.out'
+      });
+
+      // Image container
+      gsap.from('.about-image-wrapper', {
+        scrollTrigger: { trigger: '.about-image-wrapper', start: 'top 80%' },
+        x: -80, opacity: 0, duration: 1.2, ease: 'power3.out'
+      });
+
+      // Text items stagger
+      gsap.from('.about-text-item', {
+        scrollTrigger: { trigger: '.about-text-item', start: 'top 85%' },
+        x: 60, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out'
+      });
+
+      // Stats animation
+      gsap.from('.about-stat', {
+        scrollTrigger: { trigger: '.about-stat', start: 'top 90%' },
+        y: 40, opacity: 0, scale: 0.8, duration: 0.7, stagger: 0.2, ease: 'back.out(1.7)'
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section id="about" className="section glass" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-      {/* Hidden video for frame capture */}
-      <video ref={videoRef} src={profileVideo} muted preload="auto" style={{ display: 'none' }} />
-      
-      <div className="container" ref={ref}>
-        <motion.h2 
-          className="section-title text-gradient" 
-          style={{ textAlign: 'center', marginBottom: '3rem' }}
-          initial={{ opacity: 0, y: -30 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: -30 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
+    <section id="about" ref={sectionRef} className="section glass" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', overflow: 'hidden', padding: '6rem 0' }}>
+      <div className="container">
+        <h2 className="about-title section-title text-gradient" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           About Me
-        </motion.h2>
+        </h2>
         
         <div style={{
           display: 'grid',
@@ -91,133 +98,122 @@ const About: React.FC = () => {
           gap: '4rem',
           alignItems: 'center'
         }}>
-          {/* Profile Photo with Premium Styling */}
-          <motion.div 
-            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', width: '100%', maxWidth: '400px', margin: '0 auto' }}
-            initial={{ opacity: 0, x: -60 }}
-            animate={inView ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
-            transition={{ duration: 0.9, delay: 0.2, ease: "easeOut" }}
-          >
-            {/* Decorative ring behind */}
-            <div style={{
-              position: 'absolute',
-              width: '110%',
-              height: '110%',
-              borderRadius: '24px',
-              border: '2px solid var(--accent-gold)',
-              opacity: 0.3,
-              transform: 'rotate(6deg)',
-              zIndex: 0,
+          {/* Animated Image Slideshow */}
+          <div className="about-image-wrapper" ref={imageContainerRef} style={{ 
+            display: 'flex', justifyContent: 'center', alignItems: 'center', 
+            position: 'relative', width: '100%', maxWidth: '420px', margin: '0 auto' 
+          }}>
+            {/* Decorative rotating rings */}
+            <div className="about-ring-1" style={{
+              position: 'absolute', width: '115%', height: '115%', borderRadius: '24px',
+              border: '2px solid var(--accent-gold)', opacity: 0.25, transform: 'rotate(6deg)', zIndex: 0,
             }} />
-            <div style={{
-              position: 'absolute',
-              width: '108%',
-              height: '108%',
-              borderRadius: '24px',
-              border: '2px solid var(--accent-neon)',
-              opacity: 0.15,
-              transform: 'rotate(-4deg)',
-              zIndex: 0,
+            <div className="about-ring-2" style={{
+              position: 'absolute', width: '112%', height: '112%', borderRadius: '24px',
+              border: '2px solid var(--accent-neon)', opacity: 0.1, transform: 'rotate(-4deg)', zIndex: 0,
             }} />
 
-            <Tilt tiltMaxAngleX={12} tiltMaxAngleY={12} scale={1.04} transitionSpeed={2500} glareEnable={true} glareMaxOpacity={0.15} glareColor="#c5a059" glarePosition="all" style={{ width: '100%', zIndex: 2, position: 'relative' }}>
-              <div style={{ position: 'relative', borderRadius: '20px', overflow: 'hidden' }}>
-                {posterReady ? (
-                  <img 
-                    src={posterUrl} 
-                    alt="Pachiyappan - Digital Marketer & Video Editor" 
-                    style={{
-                      width: '100%',
-                      aspectRatio: '3/4',
-                      objectFit: 'cover',
-                      objectPosition: 'top center',
-                      display: 'block',
-                      borderRadius: '20px',
-                      boxShadow: '0 30px 80px rgba(0,0,0,0.7), 0 0 40px rgba(197, 160, 89, 0.2)',
-                      border: '3px solid var(--accent-gold)',
-                    }}
-                  />
-                ) : (
+            <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} scale={1.03} transitionSpeed={2500} 
+              glareEnable={true} glareMaxOpacity={0.12} glareColor="#c5a059" glarePosition="all"
+              style={{ width: '100%', zIndex: 2, position: 'relative' }}>
+              <div style={{ position: 'relative', borderRadius: '20px', overflow: 'hidden', aspectRatio: '3/4' }}>
+                {/* Video slides with crossfade */}
+                {vids.slice(0, totalSlides).map((vid, i) => (
                   <video
-                    src={profileVideo}
+                    key={i}
+                    src={vid}
                     autoPlay muted loop playsInline
                     style={{
-                      width: '100%',
-                      aspectRatio: '3/4',
-                      objectFit: 'cover',
-                      objectPosition: 'top center',
-                      display: 'block',
+                      position: i === 0 ? 'relative' : 'absolute',
+                      top: 0, left: 0,
+                      width: '100%', height: '100%',
+                      objectFit: 'cover', objectPosition: 'top center',
                       borderRadius: '20px',
-                      boxShadow: '0 30px 80px rgba(0,0,0,0.7), 0 0 40px rgba(197, 160, 89, 0.2)',
+                      boxShadow: '0 30px 80px rgba(0,0,0,0.7), 0 0 40px rgba(197,160,89,0.2)',
                       border: '3px solid var(--accent-gold)',
+                      opacity: activeIndex === i ? 1 : 0,
+                      transition: 'opacity 1.2s ease-in-out',
+                      zIndex: activeIndex === i ? 1 : 0,
                     }}
                   />
-                )}
+                ))}
+                
                 {/* Bottom gradient overlay */}
                 <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  height: '40%',
-                  background: 'linear-gradient(to top, rgba(5,5,5,0.9) 0%, transparent 100%)',
-                  borderRadius: '0 0 20px 20px',
+                  position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%',
+                  background: 'linear-gradient(to top, rgba(5,5,5,0.95) 0%, transparent 100%)',
+                  borderRadius: '0 0 20px 20px', zIndex: 5,
                 }} />
+                
                 {/* Name badge */}
                 <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  textAlign: 'center',
+                  position: 'absolute', bottom: '1.5rem', left: '50%',
+                  transform: 'translateX(-50%)', textAlign: 'center', zIndex: 6,
                 }}>
-                  <h4 style={{ fontSize: '1.4rem', color: 'var(--text-main)', fontFamily: 'var(--font-display)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+                  <h4 style={{ fontSize: '1.5rem', color: 'var(--text-main)', fontFamily: 'var(--font-display)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                     PACHI<span style={{ color: 'var(--accent-gold)' }}>.</span>
                   </h4>
                   <p style={{ fontSize: '0.8rem', color: 'var(--accent-gold)', letterSpacing: '0.2em', textTransform: 'uppercase', marginTop: '0.3rem' }}>
                     Creator & Filmmaker
                   </p>
                 </div>
+
+                {/* Slide indicators */}
+                <div style={{
+                  position: 'absolute', bottom: '5rem', left: '50%', transform: 'translateX(-50%)',
+                  display: 'flex', gap: '0.5rem', zIndex: 6,
+                }}>
+                  {Array.from({ length: totalSlides }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveIndex(i)}
+                      style={{
+                        width: activeIndex === i ? '24px' : '8px', height: '8px',
+                        borderRadius: '10px', border: 'none', cursor: 'pointer',
+                        background: activeIndex === i ? 'var(--accent-gold)' : 'rgba(255,255,255,0.3)',
+                        transition: 'all 0.4s ease',
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </Tilt>
-          </motion.div>
+          </div>
 
-          {/* Text Content with Framer Motion Stagger */}
-          <motion.div 
-            style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.2, delayChildren: 0.4 } }
-            }}
-          >
-            <motion.h3 variants={{ hidden: { opacity: 0, x: 50 }, visible: { opacity: 1, x: 0, transition: {duration: 0.6, ease: "easeOut"} } }} style={{ fontSize: '2.5rem', color: 'var(--text-main)', marginBottom: '0.5rem', lineHeight: 1.2 }}>
+          {/* Text Content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <h3 className="about-text-item" style={{ fontSize: '2.5rem', color: 'var(--text-main)', marginBottom: '0.5rem', lineHeight: 1.2 }}>
               The Face Behind the <span style={{ color: 'var(--accent-gold)' }}>Impact</span>
-            </motion.h3>
-            <motion.p variants={{ hidden: { opacity: 0, x: 50 }, visible: { opacity: 1, x: 0, transition: {duration: 0.6, ease: "easeOut"} } }} style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
-              Hi, I'm <strong style={{color: 'var(--text-main)'}}>Pachi</strong>. I am a passionate Digital Marketer, Video Editor, Script Writer, and Cinematographer. I specialize in crafting high-end, scroll-stopping visual content designed specifically to build authority and drive massive organic reach.
-            </motion.p>
-            <motion.p variants={{ hidden: { opacity: 0, x: 50 }, visible: { opacity: 1, x: 0, transition: {duration: 0.6, ease: "easeOut"} } }} style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
-              From conceptualizing the script to calling action on set, right down to the final cut in editing, I offer a true end-to-end creative solution. My goal is simple: Create cinematic, intentional content that doesn't just look pretty, but actually grows businesses.
-            </motion.p>
+            </h3>
+            <p className="about-text-item" style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
+              Hi, I'm <strong style={{ color: 'var(--text-main)' }}>Pachi</strong>. I am a passionate Digital Marketer, Video Editor, Script Writer, and Cinematographer. I specialize in crafting high-end, scroll-stopping visual content designed specifically to build authority and drive massive organic reach.
+            </p>
+            <p className="about-text-item" style={{ fontSize: '1.1rem', color: 'var(--text-muted)', lineHeight: '1.8' }}>
+              From conceptualizing the script to calling action on set, right down to the final cut — I offer a true end-to-end creative solution. My goal is simple: Create cinematic, intentional content that doesn't just look pretty, but actually grows businesses.
+            </p>
             
-            <motion.div variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: {duration: 0.6, ease: "easeOut"} } }} style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '1rem' }}>
-              <div style={{ flex: 1, minWidth: '120px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', borderBottom: '4px solid var(--accent-gold)', textAlign: 'center' }}>
-                <h4 style={{ color: 'var(--accent-gold)', fontSize: '2rem', marginBottom: '0.5rem' }}>
-                  {inView ? <Counter end={5} duration={3} suffix="+" /> : "0+"}
+            {/* Stats */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', marginTop: '1.5rem' }}>
+              <div className="about-stat" style={{ flex: 1, minWidth: '130px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', borderBottom: '4px solid var(--accent-gold)', textAlign: 'center' }}>
+                <h4 style={{ color: 'var(--accent-gold)', fontSize: '2.2rem', marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
+                  <Counter end={5} duration={3} suffix="+" />
                 </h4>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Years Experience</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Years Experience</p>
               </div>
-              <div style={{ flex: 1, minWidth: '120px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', borderBottom: '4px solid var(--accent-neon)', textAlign: 'center' }}>
-                <h4 style={{ color: 'var(--accent-neon)', fontSize: '2.5rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="about-stat" style={{ flex: 1, minWidth: '130px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', borderBottom: '4px solid var(--accent-neon)', textAlign: 'center' }}>
+                <h4 style={{ color: 'var(--accent-neon)', fontSize: '2.2rem', marginBottom: '0.5rem', fontFamily: 'var(--font-display)' }}>
+                  <Counter end={50} duration={3} suffix="+" />
+                </h4>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Projects Done</p>
+              </div>
+              <div className="about-stat" style={{ flex: 1, minWidth: '130px', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', borderBottom: '4px solid #c5a059', textAlign: 'center' }}>
+                <h4 style={{ color: '#c5a059', fontSize: '2.2rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   ∞
                 </h4>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Creative Impact</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Creative Impact</p>
               </div>
-            </motion.div>
-            
-          </motion.div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,47 +1,65 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const vids = Object.values(import.meta.glob('../../viodes/*.mp4', { eager: true, query: '?url', import: 'default' })) as string[];
 const media = [
-  { id: 1, type: 'video', src: vids[3] || vids[0] },
-  { id: 2, type: 'video', src: vids[7] || vids[0] },
-  { id: 3, type: 'video', src: vids[4] || vids[0] },
-  { id: 4, type: 'video', src: vids[8] || vids[0] },
+  { id: 1, type: 'video' as const, src: vids[3] || vids[0] },
+  { id: 2, type: 'video' as const, src: vids[7] || vids[0] },
+  { id: 3, type: 'video' as const, src: vids[4] || vids[0] },
+  { id: 4, type: 'video' as const, src: vids[8] || vids[0] },
 ];
 
 const Cinematography: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from('.cin-title', {
+        scrollTrigger: { trigger: '.cin-title', start: 'top 85%' },
+        y: 50, opacity: 0, duration: 1, ease: 'power3.out'
+      });
+      gsap.from('.cin-subtitle', {
+        scrollTrigger: { trigger: '.cin-subtitle', start: 'top 88%' },
+        y: 30, opacity: 0, duration: 0.8, delay: 0.2, ease: 'power2.out'
+      });
+      gsap.from('.cin-card', {
+        scrollTrigger: { trigger: '.cin-card', start: 'top 90%' },
+        y: 80, opacity: 0, scale: 0.85, duration: 0.9, stagger: 0.2, ease: 'power3.out'
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="cinematography" className="section glass" style={{ minHeight: '100vh', margin: '2rem 0', background: 'rgba(10, 10, 10, 0.4)' }}>
+    <section id="cinematography" ref={sectionRef} className="section glass" style={{ minHeight: '100vh', margin: '2rem 0', background: 'rgba(10, 10, 10, 0.4)' }}>
       <div className="container">
-        <h2 className="section-title text-gradient">Cinematography</h2>
-        <p style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '1.2rem' }}>
+        <h2 className="cin-title section-title text-gradient">Cinematography</h2>
+        <p className="cin-subtitle" style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '1.2rem' }}>
           Capturing real-life moments with cinematic storytelling
         </p>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '1.5rem'
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem'
         }}>
           {media.map((item, i) => (
             <div 
               key={item.id}
+              className="cin-card"
               style={{
-                borderRadius: '12px',
-                overflow: 'hidden',
-                position: 'relative',
-                aspectRatio: item.type === 'video' ? '16/9' : '4/5',
-                gridRow: i === 1 || i === 3 ? 'span 2' : 'span 1' // masonry style hack
+                borderRadius: '16px', overflow: 'hidden', position: 'relative',
+                aspectRatio: '16/9',
+                gridRow: i === 1 || i === 3 ? 'span 2' : 'span 1',
+                boxShadow: '0 15px 30px rgba(0,0,0,0.4)'
               }}
-              className="cinematic-box"
             >
               <div 
-                className="cinematic-media"
                 style={{
-                  width: '100%',
-                  height: '100%',
+                  width: '100%', height: '100%',
                   filter: 'blur(3px) grayscale(50%)',
-                  transition: 'all 0.5s ease',
-                  cursor: 'crosshair',
+                  transition: 'all 0.5s ease', cursor: 'crosshair',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.filter = 'blur(0) grayscale(0)';
@@ -52,19 +70,10 @@ const Cinematography: React.FC = () => {
                   e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
-                {item.type === 'video' ? (
-                  <video 
-                    src={item.src} 
-                    autoPlay loop muted playsInline 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  />
-                ) : (
-                  <img 
-                    src={item.src} 
-                    alt="Cinematography"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                  />
-                )}
+                <video 
+                  src={item.src} autoPlay loop muted playsInline 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                />
               </div>
             </div>
           ))}
