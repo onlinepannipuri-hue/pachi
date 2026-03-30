@@ -11,29 +11,32 @@ import { getCloudinaryUrl } from './cloudinary';
 
 const videoIds = {
   // Filename: InShot_20260319_132728086.mp4
-  inshot_main: 'InShot_20260319_132728086',
+  inshot_main: 'InShot_20260319_132728086_aljonm',
   
-  // Filename: Keep showing up.The right eyes are watching silently..mp4
-  motivation_video: 'Keep_showing_up_The_right_eyes_are_watching_silently',
+  // Filename: Keep showing up...
+  motivation_video: 'Keep_showing_up.The_right_eyes_are_watching_silently._gxt1ck',
   
-  // Filename: POV- Dad & Son Moments at MamaDada...
-  family_pov: 'POV-_Dad___Son_Moments_at_MamaDada',
+  // Filename: POV- Dad & Son...
+  family_pov: 'POV-_Dad_Son_Moments_at_MamaDada_He_thought_he_was_teaching_his_son_to_play_but_really_he_nmckfb',
   
-  // Filename: Premium Ring வாங்கணும்...
-  jewelry_showcase: 'Premium_Ring_jewelry_showcase', // User may need to update this
+  // Filename: Premium Ring...
+  jewelry_showcase: 'Premium_Ring_வாங்கணும்_ஆனா_pocket_safe_ஆகணுமா_அப்படின்ன்னா_நம்ம_SBJ_Rings_Collection_தான்_சரிய_gmbd6o',
   
-  // Filename: Style ku compromise இல்ல...
-  fashion_style: 'Style_ku_compromise_traditional', // User may need to update this
+  // Filename: Style ku compromise...
+  fashion_style: 'Style_ku_compromise_இல்ல_பாரம்பரியம்_Trendy_look_ஒரே_design_la_Traditional_touch_இருக்கணும்_uire6b',
   
   // Filename: When “Sorry” isn’t enough...
-  saree_story: 'When_Sorry_isnt_enough',
+  saree_story: 'When_Sorry_isn_t_enough_he_lets_the_saree_speak.This_saree_beautifully_captures_the_essence_o_pjj4vk',
   
   // Filename: _Madura_Veeran_Food_Review...
-  food_review_1: '_Madura_Veeran_Food_Review_Must-Try_Spot_Near_Sravana_Stores_720P_1',
-  food_review_2: '_Madura_Veeran_Food_Review_Must-Try_Spot_Near_Sravana_Stores_720P',
+  food_review_1: '_Madura_Veeran_Food_Review_Must-Try_Spot_Near_Sravana_Stores_720P_1_f9i2ro',
+  food_review_2: '_Madura_Veeran_Food_Review_Must-Try_Spot_Near_Sravana_Stores_720P_1_f9i2ro',
   
-  // Filename: ✨️ Don’t forget your special days!...
-  festive_season: 'Don_t_forget_your_special_days',
+  // Filename: Festive...
+  festive_season: '️_Don_t_forget_your_special_days_-_Steal_the_spotlight_this_festive_season_Drape_yourself_sfx085',
+  
+  // New: Punugu
+  karma_video: 'Debt_struggles_karma_blocks_Can_Punugu_change_it_Yes_Punugu_is_believed_to_clear_karma_bl_xon10f'
 };
 
 // Map segments for easy use in sections
