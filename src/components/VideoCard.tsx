@@ -8,7 +8,7 @@ interface VideoCardProps {
   onClick: () => void;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ src, title, onClick }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ src, title, category, onClick }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
