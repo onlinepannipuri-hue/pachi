@@ -9,42 +9,25 @@ gsap.registerPlugin(ScrollTrigger);
 
 const rawVideos = ALL_VIDEOS;
 
-const videos = rawVideos.map((src, index) => ({
-  id: index + 1,
-  category: ['Reels', 'Client Work', 'Viral Videos', 'Edits'][index % 4],
-  title: `Project ${index + 1}`,
-  src: src
-}));
-
-const categories = ['All', 'Reels', 'Client Work', 'Viral Videos', 'Edits'];
+const videos = [
+  { id: 1, category: 'Edited by Me', title: 'Viral Edit', src: rawVideos[5] || rawVideos[0] },
+  { id: 2, category: 'Edited by Me', title: 'Reel Edit', src: rawVideos[2] || rawVideos[1] }
+];
 
 const VideoEditing: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('All');
   const [modalVideo, setModalVideo] = useState<string | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
-  const filteredVideos = activeTab === 'All' 
-    ? videos 
-    : videos.filter(v => v.category === activeTab);
-
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Title reveal
       gsap.from('.ve-title', {
         scrollTrigger: { trigger: '.ve-title', start: 'top 85%' },
         y: 50, opacity: 0, duration: 1, ease: 'power3.out'
       });
-      // Subtitle
-      gsap.from('.ve-subtitle', {
-        scrollTrigger: { trigger: '.ve-subtitle', start: 'top 85%' },
+      gsap.from('.ve-desc', {
+        scrollTrigger: { trigger: '.ve-desc', start: 'top 85%' },
         y: 30, opacity: 0, duration: 0.8, delay: 0.2, ease: 'power3.out'
       });
-      // Tabs stagger
-      gsap.from('.ve-tab', {
-        scrollTrigger: { trigger: '.ve-tab', start: 'top 88%' },
-        y: 20, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out'
-      });
-      // Cards stagger
       gsap.from('.ve-card', {
         scrollTrigger: { trigger: '.ve-card', start: 'top 90%' },
         y: 60, opacity: 0, scale: 0.9, duration: 0.7, stagger: 0.15, ease: 'power3.out'
@@ -55,44 +38,39 @@ const VideoEditing: React.FC = () => {
 
   return (
     <>
-      <section id="work" className="section" ref={sectionRef} style={{ padding: '6rem 0' }}>
+      <section id="edited-by-me" className="section" ref={sectionRef} style={{ padding: '6rem 0' }}>
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 className="ve-title section-title" style={{ marginBottom: '1rem' }}>
-              <span className="text-gradient">Video Editing Portfolio</span>
+              <span className="text-gradient">Edited by Me</span>
             </h2>
-            <p className="ve-subtitle" style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>
-              High-engagement video edits with organic reach (No Paid Ads)
-            </p>
+            
+            <div className="ve-desc glass" style={{ 
+              display: 'inline-block', 
+              padding: '1.5rem 2.5rem', 
+              borderRadius: '12px', 
+              marginTop: '1rem',
+              border: '1px solid rgba(197, 160, 89, 0.3)'
+            }}>
+              <p style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-main)', fontWeight: 600 }}>Tools Used:</p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '0.8rem' }}>
+                <span style={{ 
+                  background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: '6px', 
+                  backdropFilter: 'blur(4px)', color: '#fff', fontWeight: 500
+                }}>Premiere Pro</span>
+                <span style={{ 
+                  background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: '6px', 
+                  backdropFilter: 'blur(4px)', color: '#fff', fontWeight: 500
+                }}>CapCut</span>
+              </div>
+            </div>
           </div>
 
-          {/* Tabs */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className="ve-tab"
-                onClick={() => setActiveTab(cat)}
-                style={{
-                  padding: '0.75rem 1.5rem', borderRadius: '30px',
-                  background: activeTab === cat ? 'var(--accent-gold)' : 'rgba(255,255,255,0.05)',
-                  color: activeTab === cat ? '#000' : 'var(--text-main)',
-                  fontWeight: 600, transition: 'all 0.3s ease',
-                  border: '1px solid', borderColor: activeTab === cat ? 'transparent' : 'rgba(255,255,255,0.1)',
-                  transform: activeTab === cat ? 'scale(1.05)' : 'scale(1)',
-                }}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Video Grid */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem'
+            display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap'
           }}>
-            {filteredVideos.map(video => (
-              <div key={video.id} className="ve-card">
+            {videos.map(video => (
+              <div key={video.id} className="ve-card" style={{ flex: '0 1 300px' }}>
                 <VideoCard 
                   src={video.src} title={video.title} category={video.category}
                   onClick={() => setModalVideo(video.src)}

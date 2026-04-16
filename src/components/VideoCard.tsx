@@ -86,17 +86,19 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, onClick }) => {
       onClick={onClick}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <span style={{ 
-            background: 'rgba(197, 160, 89, 0.8)', 
-            color: '#000', 
-            padding: '4px 8px', 
-            borderRadius: '4px', 
-            fontSize: '0.75rem', 
-            fontWeight: 'bold',
-            textTransform: 'uppercase'
-          }}>
-            Edited by Me
-          </span>
+          {category && (
+            <span style={{ 
+              background: 'rgba(197, 160, 89, 0.8)', 
+              color: '#000', 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              fontSize: '0.75rem', 
+              fontWeight: 'bold',
+              textTransform: 'uppercase'
+            }}>
+              {category}
+            </span>
+          )}
           
           <button 
             onClick={(e) => { e.stopPropagation(); setIsMuted(!isMuted); }}
@@ -114,10 +116,6 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, onClick }) => {
 
         <div>
           <h3 style={{ fontSize: '1.2rem', margin: 0, textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>{title}</h3>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', backdropFilter: 'blur(4px)' }}>Premiere Pro</span>
-            <span style={{ fontSize: '0.7rem', background: 'rgba(255,255,255,0.1)', padding: '2px 6px', borderRadius: '4px', backdropFilter: 'blur(4px)' }}>CapCut</span>
-          </div>
         </div>
       </div>
       
